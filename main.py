@@ -1,47 +1,82 @@
 import pygame
 from pygame.locals import *
+import time
 
-def draw_block():
-    surface.fill((64, 168, 50))
-    surface.blit(block, (block_x, block_y))
-    pygame.display.flip()
+class Snake:
+    def __init__(self, parent_screen):
+        self.parent_screen = parent_screen
+        self.block = pygame.image.load('resources/body.jpg').convert()
+        self.x = 100
+        self.y = 100
+        self.direction = 'down'
+
+    def draw(self):
+        self.parent_screen.fill((64, 168, 50))
+        self.parent_screen.blit(self.block, (self.x, self.y))
+        pygame.display.flip()
+
+    def move_left(self):
+        self.direction = 'left'
+
+    def move_right(self):
+        self.direction = 'right'
+
+    def move_up(self):
+        self.direction = 'up'
+
+    def move_down(self):
+        self.direction = 'down'
+
+    def walk(self):
+        if self.direction == 'left':
+            self.x -= 10
+        if self.direction == 'right':
+            self.x += 10
+        if self.direction == 'up':
+            self.y -= 10
+        if self.direction == 'down':
+            self.y += 10
+
+        self.draw()
+
+
+
+class Game:
+    def __init__(self):
+        pygame.init()
+        self.color_bg = 64, 168, 50
+        self.surface = pygame.display.set_mode((1000, 600))
+        self.surface.fill(self.color_bg)
+        self.snake = Snake(self.surface)
+        self.snake.draw()
+
+    def run(self):
+        running = True
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        running = False
+
+                    if event.key == K_UP:
+                        self.snake.move_up()
+
+                    if event.key == K_DOWN:
+                        self.snake.move_down()
+
+                    if event.key == K_LEFT:
+                        self.snake.move_left()
+
+                    if event.key == K_RIGHT:
+                        self.snake.move_right()
+
+                elif event.type == QUIT:
+                    running = False
+            self.snake.walk()
+            time.sleep(0.2)
+
 
 if __name__ == '__main__':
-    pygame.init()
-
-    surface = pygame.display.set_mode((1000, 600))
-    surface.fill((64, 168, 50))
-
-    block = pygame.image.load('resources/body.jpg').convert()
-    block_x = 100
-    block_y = 100
-    surface.blit(block, (block_x, block_y))
-
-    pygame.display.flip()
-
-    running = True
-
-    while running:
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    running = False
-
-                if event.key == K_UP:
-                    block_y -= 10
-                    draw_block()
-
-                if event.key == K_DOWN:
-                    block_y += 10
-                    draw_block()
-
-                if event.key == K_LEFT:
-                    block_x -= 10
-                    draw_block()
-
-                if event.key == K_RIGHT:
-                    block_x += 10
-                    draw_block()
-
-            elif event.type == QUIT:
-                running = False
+    game = Game()
+    game.run()
